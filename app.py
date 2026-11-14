@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Astronaut Health & Cabin Monitor — Streamlit dashboard (Full Features + Optimized UI & Responsive Grid)
+Astronaut Health & Cabin Monitor — Streamlit dashboard (Fixed HTML Render / DIV bug & UI Polish)
 """
 import sys
 from datetime import date, timedelta
@@ -49,6 +49,7 @@ I18N = {
         "space_query": "Query Celestial Body or Spacecraft (e.g., Mars, Artemis, Voyager, Asteroid)",
         "search_space": "Fetch Telemetry / Ephemeris Data",
         "term": "Query term", "none_ev": "No active SEP events detected.", "fail": "API connection failure:",
+        "data_quality": {"GOOD": "Data quality: good", "PARTIAL": "Data quality: partial", "INSUFFICIENT": "Data quality: insufficient", "UNKNOWN": "Data quality: unknown"},
         "src": "Standards & References", "src_md": "- NASA-STD-3001 Space Flight Human-System Standard.\n- Simulated telemetry generated via physiological differential models."
     },
     "tr": {
@@ -77,6 +78,7 @@ I18N = {
         "space_query": "Gök Cismi veya Uzay Aracı Sorgula (örn: Mars, Artemis, Voyager, Asteroid)",
         "search_space": "Telemetri / Ephemeris Verisi Getir",
         "term": "Arama Terimi", "none_ev": "Aktif SEP olayı tespit edilmedi.", "fail": "API bağlantı hatası:",
+        "data_quality": {"GOOD": "Veri kalitesi: iyi", "PARTIAL": "Veri kalitesi: kısmi", "INSUFFICIENT": "Veri kalitesi: yetersiz", "UNKNOWN": "Veri kalitesi: bilinmiyor"},
         "src": "Standartlar ve Referanslar", "src_md": "- NASA-STD-3001 Uzay Uçuşu İnsan-Sistem Standardı.\n- Fizyolojik modellerle üretilmiş simüle telemetri."
     },
     "de": {
@@ -96,6 +98,7 @@ I18N = {
         "comp_h": "Crew-Vergleich", "comp_p": "Vergleich.", "live_h": "Live NASA Feed", "live_p": "Updates.",
         "news_h": "NASA News", "news_p": "News.", "donki": "Solarereignisse", "osdr": "OSDR Suchen",
         "space_query": "Objekt abfragen", "search_space": "Suchen", "term": "Begriff", "none_ev": "Keine.", "fail": "Fehler:",
+        "data_quality": {"GOOD": "Qualität: gut", "PARTIAL": "Qualität: teilweise", "INSUFFICIENT": "Qualität: unzureichend", "UNKNOWN": "Qualität: unbekannt"},
         "src": "Referenzen", "src_md": "- Standards."
     },
     "fr": {
@@ -115,6 +118,7 @@ I18N = {
         "comp_h": "Comparaison", "comp_p": "Comparez.", "live_h": "Flux NASA", "live_p": "Mises à jour.",
         "news_h": "Actualités", "news_p": "Nouvelles.", "donki": "Événements", "osdr": "Recherche OSDR",
         "space_query": "Rechercher", "search_space": "Obtenir", "term": "Terme", "none_ev": "Aucun.", "fail": "Erreur:",
+        "data_quality": {"GOOD": "Qualité: bonne", "PARTIAL": "Qualité: partielle", "INSUFFICIENT": "Qualité: insuffisante", "UNKNOWN": "Qualité: inconnue"},
         "src": "Références", "src_md": "- Normes."
     },
     "es": {
@@ -134,6 +138,7 @@ I18N = {
         "comp_h": "Comparación", "comp_p": "Compare.", "live_h": "Feed NASA", "live_p": "Actualizaciones.",
         "news_h": "Noticias", "news_p": "Anuncios.", "donki": "Eventos Solares", "osdr": "Buscar OSDR",
         "space_query": "Consultar objeto", "search_space": "Obtener datos", "term": "Término", "none_ev": "Sin eventos.", "fail": "Error:",
+        "data_quality": {"GOOD": "Calidad: buena", "PARTIAL": "Calidad: parcial", "INSUFFICIENT": "Calidad: insuficiente", "UNKNOWN": "Calidad: desconocida"},
         "src": "Referencias", "src_md": "- Estándares."
     }
 }
@@ -246,13 +251,17 @@ tab_mon, tab_comp, tab_live, tab_hub = st.tabs([T["tab1"], T["tab2"], T["tab3"],
 with tab_mon:
     st.title(T["title"])
     lvl = int(cur["pred_level"])
-    recov_html = "<div style='font-size:13px;margin-top:4px;opacity:0.9;'>" + T["recov"] + "</div>" if cur["pred_recovering"] else ""
-    st.markdown(
-        f"""<div style="background:linear-gradient(90deg, {LEVEL_COLOR[lvl]}aa 0%, {LEVEL_COLOR[lvl]}33 100%);border-left:6px solid {LEVEL_COLOR[lvl]};padding:20px 24px;border-radius:12px;color:white;box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3);">
-        <div style="font-size:12px;text-transform:uppercase;letter-spacing:0.05em;opacity:0.8;">{astro} · {cur['timestamp']:%d.%m.%Y %H:%M} UTC · {T['ctx'].get(cur['pred_context'], cur['pred_context']).upper()} · {T['live']}</div>
-        <div style="font-size:32px;font-weight:800;margin-top:2px;letter-spacing:-0.025em;">{T['lvl'][lvl]}</div>
+    recov_html = f"<div style='font-size:13px;margin-top:4px;opacity:0.9;'>{T['recov']}</div>" if cur["pred_recovering"] else ""
+    
+    # Güvenli HTML Kart yapısı (DIV çakışmalarını ve markdown render hatalarını önlemek için tek blok)
+    banner_html = f"""
+    <div style="background:linear-gradient(90deg, {LEVEL_COLOR[lvl]}aa 0%, {LEVEL_COLOR[lvl]}33 100%); border-left:6px solid {LEVEL_COLOR[lvl]}; padding:20px 24px; border-radius:12px; color:white; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3);">
+        <div style="font-size:12px; text-transform:uppercase; letter-spacing:0.05em; opacity:0.8;">{astro} · {cur['timestamp']:%d.%m.%Y %H:%M} UTC · {T['ctx'].get(cur['pred_context'], cur['pred_context']).upper()} · {T['live']}</div>
+        <div style="font-size:32px; font-weight:800; margin-top:2px; letter-spacing:-0.025em;">{T['lvl'][lvl]}</div>
         {recov_html}
-        </div>""", unsafe_allow_html=True)
+    </div>
+    """
+    st.markdown(banner_html, unsafe_allow_html=True)
 
     # ---- Risk Alanı Matrisi (3'lü iki satır - Tablet/Mobil Uyumlu) ----
     st.write("")
