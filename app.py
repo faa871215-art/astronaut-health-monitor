@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-Astronaut Health & Cabin Monitor — Streamlit dashboard (Mission Control + PDF Report Generator)
+Astronaut Health & Cabin Monitor — Streamlit dashboard (Mission Control + Built-in Text Report Generator)
 """
+sys_modules_check = True
 import sys
 from datetime import date, timedelta
 from pathlib import Path
@@ -10,7 +11,6 @@ import altair as alt
 import numpy as np
 import pandas as pd
 import streamlit as st
-from fpdf import FPDF  # PDF Rapor oluşturmak için
 
 ROOT = Path(__file__).parent
 sys.path.insert(0, str(ROOT / "src"))
@@ -52,8 +52,7 @@ I18N = {
         "term": "Query term", "none_ev": "No active SEP events detected.", "fail": "API connection failure:",
         "data_quality": {"GOOD": "Data quality: good", "PARTIAL": "Data quality: partial", "INSUFFICIENT": "Data quality: insufficient", "UNKNOWN": "Data quality: unknown"},
         "src": "Standards & References", "src_md": "- NASA-STD-3001 Space Flight Human-System Standard.\n- Simulated telemetry generated via physiological differential models.",
-        "pdf_btn": "📄 Download Official Health & Telemetry PDF Report",
-        "pdf_title": "NASA MISSION CONTROL - HEALTH STATUS REPORT"
+        "pdf_btn": "📄 Download Official Health & Telemetry Report (TXT)",
     },
     "tr": {
         "title": "NASA Görev Kontrol: Astronot Sağlığı ve Kabin Telemetrisi", "side": "Komuta Merkezi", "astro": "Astronot",
@@ -83,8 +82,7 @@ I18N = {
         "term": "Arama Terimi", "none_ev": "Aktif SEP olayı tespit edilmedi.", "fail": "API bağlantı hatası:",
         "data_quality": {"GOOD": "Veri kalitesi: iyi", "PARTIAL": "Veri kalitesi: kısmi", "INSUFFICIENT": "Veri kalitesi: yetersiz", "UNKNOWN": "Veri kalitesi: bilinmiyor"},
         "src": "Standartlar ve Referanslar", "src_md": "- NASA-STD-3001 Uzay Uçuşu İnsan-Sistem Standardı.\n- Fizyolojik modellerle üretilmiş simüle telemetri.",
-        "pdf_btn": "📄 Resmi Sağlık ve Telemetri PDF Raporunu İndir",
-        "pdf_title": "NASA GÖREV KONTROL - SAĞLIK DURUM RAPORU"
+        "pdf_btn": "📄 Resmi Sağlık ve Telemetri Raporunu İndir",
     },
     "de": {
         "title": "NASA Missionskontrolle", "side": "Kommandozentrale", "astro": "Astronaut",
@@ -105,8 +103,7 @@ I18N = {
         "space_query": "Objekt abfragen", "search_space": "Suchen", "term": "Begriff", "none_ev": "Keine.", "fail": "Fehler:",
         "data_quality": {"GOOD": "Qualität: gut", "PARTIAL": "Qualität: teilweise", "INSUFFICIENT": "Qualität: unzureichend", "UNKNOWN": "Qualität: unbekannt"},
         "src": "Referenzen", "src_md": "- Standards.",
-        "pdf_btn": "📄 Offiziellen Gesundheitsbericht als PDF herunterladen",
-        "pdf_title": "NASA MISSIONSKONTROLLE - GESUNDHEITSBERICHT"
+        "pdf_btn": "📄 Offiziellen Gesundheitsbericht herunterladen",
     },
     "fr": {
         "title": "Contrôle de Mission NASA", "side": "Centre de Commande", "astro": "Astronaute",
@@ -127,8 +124,7 @@ I18N = {
         "donki": "Événements", "osdr": "Recherche OSDR", "space_query": "Rechercher", "search_space": "Obtenir", "term": "Terme", "none_ev": "Aucun.", "fail": "Erreur:",
         "data_quality": {"GOOD": "Qualité: bonne", "PARTIAL": "Qualité: partielle", "INSUFFICIENT": "Qualité: insuffisante", "UNKNOWN": "Qualité: inconnue"},
         "src": "Références", "src_md": "- Normes.",
-        "pdf_btn": "📄 Télécharger le rapport de santé officiel en PDF",
-        "pdf_title": "CONTRÔLE DE MISSION NASA - RAPPORT DE SANTÉ"
+        "pdf_btn": "📄 Télécharger le rapport de santé officiel",
     },
     "es": {
         "title": "Control de Misión NASA", "side": "Centro de Mando", "astro": "Astronauta",
@@ -149,8 +145,7 @@ I18N = {
         "donki": "Eventos Solares", "osdr": "Buscar OSDR", "space_query": "Consultar objeto", "search_space": "Obtener datos", "term": "Término", "none_ev": "Sin eventos.", "fail": "Error:",
         "data_quality": {"GOOD": "Calidad: buena", "PARTIAL": "Calidad: parcial", "INSUFFICIENT": "Calidad: insuficiente", "UNKNOWN": "Calidad: desconocida"},
         "src": "Referencias", "src_md": "- Estándares.",
-        "pdf_btn": "📄 Descargar informe oficial de salud en PDF",
-        "pdf_title": "CONTROL DE MISIÓN NASA - INFORME DE SALUD"
+        "pdf_btn": "📄 Descargar informe oficial de salud",
     }
 }
 
@@ -209,61 +204,38 @@ def tile(label, status_text, color):
             f"<div style='font-size:11px;text-transform:uppercase;letter-spacing:0.05em;opacity:0.8;color:#94a3b8;'>{label}</div>"
             f"<div style='font-size:16px;font-weight:700;margin-top:4px;color:#f8fafc;'>{status_text}</div></div>")
 
-# --- PDF Oluşturma Fonksiyonu ---
-def generate_health_pdf(astro_name, cur_data, status_text, t_label):
-    pdf = FPDF()
-    pdf.add_page()
-    pdf.set_font("Arial", "B", 16)
-    
-    # Başlık
-    pdf.cell(0, 10, "NASA MISSION CONTROL - HEALTH & TELEMETRY REPORT", 0, 1, "C")
-    pdf.set_font("Arial", "", 10)
-    pdf.cell(0, 6, f"Generated for Astronaut: {astro_name} | Timeline: {t_label}", 0, 1, "C")
-    pdf.ln(10)
-    
-    # Durum Kutusu
-    pdf.set_font("Arial", "B", 12)
-    pdf.set_fill_value = (30, 41, 59)
-    pdf.cell(0, 10, f"Overall Mission Status: {status_text}", 0, 1, "L", True)
-    pdf.ln(5)
-    
-    # Telemetri Değerleri Tablosu Başlığı
-    pdf.set_font("Arial", "B", 11)
-    pdf.cell(0, 8, "Key Telemetry Parameters (Aligned with NASA-STD-3001):", 0, 1, "L")
-    pdf.set_font("Arial", "", 10)
-    
-    params = [
-        ("Cabin pCO2", f"{cur_data.get('cabin_pco2_mmhg', 0):.2f} mmHg"),
-        ("Cabin Pressure", f"{cur_data.get('cabin_pressure_kpa', 0):.2f} kPa"),
-        ("Cabin pO2", f"{cur_data.get('cabin_po2_mmhg', 0):.1f} mmHg"),
-        ("Heart Rate", f"{cur_data.get('heart_rate_bpm', 0):.0f} bpm"),
-        ("SpO2", f"{cur_data.get('spo2_percent', 0):.1f} %"),
-        ("Cumulative Radiation Dose", f"{cur_data.get('cum_dose_msv', 0):.3f} mSv")
-    ]
-    
-    for label, val in params:
-        pdf.cell(100, 8, f" - {label}:", 0, 0)
-        pdf.cell(0, 8, f"{val}", 0, 1)
-        
-    pdf.ln(10)
-    pdf.set_font("Arial", "B", 11)
-    pdf.cell(0, 8, "Subsystem Risk Assessment:", 0, 1, "L")
-    pdf.set_font("Arial", "", 10)
-    
-    domains = [
-        ("Cabin Environment", cur_data.get('dom_environment', 0)),
-        ("Radiation Exposure", cur_data.get('dom_radiation', 0)),
-        ("Cardiorespiratory", cur_data.get('dom_cardio', 0))
-    ]
-    for d_name, d_val in domains:
-        pdf.cell(100, 8, f" - {d_name} Risk Level:", 0, 0)
-        pdf.cell(0, 8, f"Level {d_val}", 0, 1)
-        
-    pdf.ln(15)
-    pdf.set_font("Arial", "I", 9)
-    pdf.cell(0, 8, "Note: This is an automated report generated by the NASA Space Apps Challenge prototype.", 0, 1, "C")
-    
-    return pdf.output(dest="S").encode("latin1")
+# --- Yerleşik Rapor Oluşturma Fonksiyonu ---
+def generate_report_text(astro_name, cur_data, status_text, t_label):
+    report = f"""==================================================
+NASA MISSION CONTROL - OFFICIAL HEALTH & TELEMETRY REPORT
+==================================================
+Generated for Astronaut: {astro_name}
+Mission Timeline: {t_label}
+Overall Mission Status: {status_text}
+Standards Compliance: NASA-STD-3001
+
+--------------------------------------------------
+KEY TELEMETRY PARAMETERS:
+--------------------------------------------------
+- Cabin pCO2: {cur_data.get('cabin_pco2_mmhg', 0):.2f} mmHg
+- Cabin Pressure: {cur_data.get('cabin_pressure_kpa', 0):.2f} kPa
+- Cabin pO2: {cur_data.get('cabin_po2_mmhg', 0):.1f} mmHg
+- Heart Rate: {cur_data.get('heart_rate_bpm', 0):.0f} bpm
+- SpO2: {cur_data.get('spo2_percent', 0):.1f} %
+- Cumulative Radiation Dose: {cur_data.get('cum_dose_msv', 0):.3f} mSv
+
+--------------------------------------------------
+SUBSYSTEM RISK ASSESSMENT:
+--------------------------------------------------
+- Cabin Environment Risk Level: Level {cur_data.get('dom_environment', 0)}
+- Radiation Exposure Risk Level: Level {cur_data.get('dom_radiation', 0)}
+- Cardiorespiratory Risk Level: Level {cur_data.get('dom_cardio', 0)}
+
+==================================================
+Note: Automated report generated by NASA Space Apps Challenge prototype.
+==================================================
+"""
+    return report
 
 # ---------------- Sidebar & Dil Seçimi ----------------
 lang_map = {"English": "en", "Türkçe": "tr", "Deutsch": "de", "Français": "fr", "Español": "es"}
@@ -329,14 +301,14 @@ with tab_mon:
     """
     st.markdown(banner_html, unsafe_allow_html=True)
     
-    # ---- PDF İndirme Butonu ----
+    # ---- Rapor İndirme Butonu (Yerleşik & Hatasız) ----
     st.write("")
-    pdf_bytes = generate_health_pdf(astro, cur, T['lvl'][lvl], f"{cur['timestamp']:%d.%m.%Y %H:%M} UTC")
+    report_text = generate_report_text(astro, cur, T['lvl'][lvl], f"{cur['timestamp']:%d.%m.%Y %H:%M} UTC")
     st.download_button(
         label=T["pdf_btn"],
-        data=pdf_bytes,
-        file_name=f"NASA_Health_Report_{astro}_{cur['timestamp']:%Y%m%d_%H%M}.pdf",
-        mime="application/pdf",
+        data=report_text,
+        file_name=f"NASA_Health_Report_{astro}_{cur['timestamp']:%Y%m%d_%H%M}.txt",
+        mime="text/plain",
         use_container_width=True
     )
 
