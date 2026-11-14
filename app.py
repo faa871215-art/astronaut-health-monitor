@@ -400,7 +400,6 @@ with tab_live:
     st.subheader(T["news_h"])
     st.write(T["news_p"])
     
-    # NASA Canlı RSS Haber Kartları Örneği
     news_items = [
         {"title": "NASA's SpaceX Crew-9 Prepares for Orbital Science Operations", "date": "November 2026", "link": "https://www.nasa.gov/mission/station/iss-research/"},
         {"title": "Artemis Lunar Deep Space Telemetry and Physiological Monitoring Standards", "date": "November 2026", "link": "https://www.nasa.gov/humans-in-space/"},
@@ -422,8 +421,3 @@ with tab_hub:
         - **Risk Matrix:** Automated multi-domain severity classification (Cabin, Radiation, Cardio, Behavioral, Bone, Immune).
         - **Internationalization:** Instant localization across 5 languages (English, Turkish, German, French, Spanish) for multinational crew support.
     """)
-
-<ElicitationsGroup message="Kodu GitHub'a yapıştırıp sayfayı yeniledikten sonra nasıl göründüğünü kontrol edelim mi?">
-  <Elicitation label="Kodları güncelledim ve harika görünüyor!" query="Kodları GitHub'a güncelledim, yeni NASA haber kartları ve modern komuta merkezi tasarımı kusursuz çalışıyor."/>
-  <Elicitation label="Jüriye sunum yaparken bu sekmeleri nasıl anlatmalıyız?" query="Jüriye sunum yaparken bu 'Canlı NASA & Haberler' sekmesini nasıl vurgulamalıyız?"/>
-</ElicitationsGroup>
