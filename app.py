@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Astronaut Health & Cabin Monitor — Streamlit dashboard (Multi-language + Dark Mode)
+Astronaut Health & Cabin Monitor — Streamlit dashboard (Multi-language + Dark Mode + Crew Comparison)
 """
 import sys
 from datetime import date, timedelta
@@ -41,8 +41,9 @@ I18N = {
         "why": "Why it matters", "steps": "Suggested response steps", "flags": "Active flags", "trend": "Trend note",
         "ok": "All parameters nominal. No action needed.", "watch": "Values near limits; keep monitoring.",
         "disc": "⚠️ Prototype automatic suggestions; simulated data.",
-        "tab1": "Monitor", "tab2": "Live NASA Data", "live_h": "Real NASA data",
-        "live_p": "Optional panels pulling public NASA APIs.",
+        "tab1": "Monitor", "tab2": "Crew Comparison", "tab3": "Live NASA Data",
+        "comp_h": "Multi-Crew Telemetry Comparison", "comp_p": "Compare all astronauts simultaneously over time.",
+        "live_h": "Real NASA data", "live_p": "Optional panels pulling public NASA APIs.",
         "donki": "Fetch Solar Events (DONKI)", "osdr": "Search OSDR Studies",
         "term": "Search term", "none_ev": "No SEP events found.", "fail": "Could not reach NASA service:",
         "src": "Data & Sources", "src_md": "- Simulated crew telemetry & NASA-STD-3001 limits."
@@ -65,8 +66,9 @@ I18N = {
         "why": "Neden Önemli", "steps": "Önerilen Müdahale Adımları", "flags": "Aktif Bayraklar", "trend": "Trend Notu",
         "ok": "Tüm parametreler nominal. Müdahale gerekmiyor.", "watch": "Sınıra yakın değerler var; izleyin.",
         "disc": "⚠️ Prototip otomatik önerileridir; veriler simülasyondur.",
-        "tab1": "İzleme", "tab2": "Canlı NASA Verisi", "live_h": "Gerçek NASA Verisi",
-        "live_p": "Halka açık NASA API'lerinden veri çeken opsiyonel panel.",
+        "tab1": "İzleme", "tab2": "Mürettebat Karşılaştırma", "tab3": "Canlı NASA Verisi",
+        "comp_h": "Tüm Mürettebat Telemetri Karşılaştırması", "comp_p": "Tüm astronotların durumunu aynı zaman diliminde kıyaslayın.",
+        "live_h": "Gerçek NASA Verisi", "live_p": "Halka açık NASA API'lerinden veri çeken opsiyonel panel.",
         "donki": "Güneş Olaylarını Getir (DONKI)", "osdr": "OSDR Araştırmalarında Ara",
         "term": "Arama Terimi", "none_ev": "SEP olayı bulunamadı.", "fail": "NASA servisine ulaşılamadı:",
         "src": "Veri ve Kaynaklar", "src_md": "- Simüle mürettebat telemetrisi ve NASA-STD-3001 limitleri."
@@ -89,8 +91,9 @@ I18N = {
         "why": "Warum das wichtig ist", "steps": "Empfohlene Schritte", "flags": "Aktive Flags", "trend": "Trend",
         "ok": "Alle Parameter nominal.", "watch": "Werte nahe der Grenzwerte.",
         "disc": "⚠️ Prototyp-Empfehlungen; simulierte Daten.",
-        "tab1": "Monitor", "tab2": "Live NASA Daten", "live_h": "Echte NASA-Daten",
-        "live_p": "Optionale Panels für öffentliche NASA-APIs.",
+        "tab1": "Monitor", "tab2": "Crew-Vergleich", "tab3": "Live NASA Daten",
+        "comp_h": "Missionsvergleich der Crew", "comp_p": "Vergleichen Sie alle Astronauten.",
+        "live_h": "Echte NASA-Daten", "live_p": "Optionale Panels für öffentliche NASA-APIs.",
         "donki": "Solarereignisse abrufen", "osdr": "OSDR Studien suchen",
         "term": "Suchbegriff", "none_ev": "Keine Ereignisse.", "fail": "Dienst nicht erreichbar:",
         "src": "Daten & Quellen", "src_md": "- Simulierte Telemetrie & NASA-Standards."
@@ -113,8 +116,9 @@ I18N = {
         "why": "Pourquoi c'est important", "steps": "Mesures suggérées", "flags": "Indicateurs", "trend": "Tendance",
         "ok": "Paramètres nominaux.", "watch": "Valeurs proches des limites.",
         "disc": "⚠️ Suggestions automatiques; données simulées.",
-        "tab1": "Moniteur", "tab2": "Données NASA", "live_h": "Données NASA en direct",
-        "live_p": "Panneaux optionnels connectés aux API NASA.",
+        "tab1": "Moniteur", "tab2": "Comparaison d'équipage", "tab3": "Données NASA",
+        "comp_h": "Comparaison de télémétrie", "comp_p": "Comparez tous les astronautes.",
+        "live_h": "Données NASA en direct", "live_p": "Panneaux optionnels connectés aux API NASA.",
         "donki": "Événements solaires", "osdr": "Recherche OSDR",
         "term": "Terme de recherche", "none_ev": "Aucun événement.", "fail": "Service injoignable:",
         "src": "Sources", "src_md": "- Télémétrie simulée & limites NASA."
@@ -137,8 +141,9 @@ I18N = {
         "why": "Por qué importa", "steps": "Pasos sugeridos", "flags": "Alertas activas", "trend": "Nota de tendencia",
         "ok": "Parámetros nominales.", "watch": "Valores cerca del límite.",
         "disc": "⚠️ Sugerencias de prototipo; datos simulados.",
-        "tab1": "Monitor", "tab2": "Datos de NASA", "live_h": "Datos reales de NASA",
-        "live_p": "Paneles opcionales con APIs públicas de NASA.",
+        "tab1": "Monitor", "tab2": "Comparación de tripulación", "tab3": "Datos de NASA",
+        "comp_h": "Comparación de telemetría", "comp_p": "Compare la tripulación.",
+        "live_h": "Datos reales de NASA", "live_p": "Paneles opcionales con APIs públicas de NASA.",
         "donki": "Eventos solares (DONKI)", "osdr": "Buscar en OSDR",
         "term": "Término de búsqueda", "none_ev": "Sin eventos.", "fail": "No se pudo conectar:",
         "src": "Fuentes", "src_md": "- Telemetría simulada y límites NASA."
@@ -187,6 +192,14 @@ def line_chart(df, col, title, unit, rules=(), height=220, x="timestamp:T", poin
             y="v:Q", color=alt.Color("color:N", scale=None), tooltip=["label:N", "v:Q"]))
     return alt.layer(*layers).properties(title=title, height=height)
 
+def multi_line_chart(df, col, title, unit, height=280):
+    return alt.Chart(df).mark_line(strokeWidth=2).encode(
+        x=alt.X("timestamp:T", title=None),
+        y=alt.Y(f"{col}:Q", title=unit, scale=alt.Scale(zero=False)),
+        color=alt.Color("astronaut_id:N", title="Astronaut"),
+        tooltip=["timestamp:T", "astronaut_id:N", alt.Tooltip(f"{col}:Q", format=".2f")]
+    ).properties(title=title, height=height).interactive()
+
 def tile(label, status_text, color):
     return (f"<div style='background:{color};padding:10px 12px;border-radius:10px;color:white;min-height:78px;'>"
             f"<div style='font-size:12px;opacity:.9;'>{label}</div>"
@@ -231,7 +244,7 @@ win = d[d["timestamp"] >= d["timestamp"].max() - pd.Timedelta(hours=window_h)]
 cur = d.iloc[-1]
 prev = d.iloc[-2] if len(d) > 1 else cur
 
-tab_mon, tab_live = st.tabs([T["tab1"], T["tab2"]])
+tab_mon, tab_comp, tab_live = st.tabs([T["tab1"], T["tab2"], T["tab3"]])
 
 with tab_mon:
     st.title(T["title"])
@@ -333,6 +346,20 @@ with tab_mon:
     st.caption(T["disc"])
     with st.expander(T["src"]):
         st.markdown(T["src_md"])
+
+with tab_comp:
+    st.subheader(T["comp_h"])
+    st.write(T["comp_p"])
+    
+    # Tüm astronotların seçilen zaman penceresindeki verilerini filtrele
+    df_win = df[df["timestamp"] <= pd.Timestamp(t_sel)]
+    df_win = df_win[df_win["timestamp"] >= df_win["timestamp"].max() - pd.Timedelta(hours=window_h)]
+    
+    col_comp1, col_comp2 = st.columns(2)
+    with col_comp1:
+        st.altair_chart(multi_line_chart(df_win, "heart_rate_bpm", "Heart Rate Comparison (bpm)", "bpm"), use_container_width=True)
+    with col_comp2:
+        st.altair_chart(multi_line_chart(df_win, "cum_dose_msv", "Cumulative Radiation Dose (mSv)", "mSv"), use_container_width=True)
 
 with tab_live:
     st.subheader(T["live_h"])
