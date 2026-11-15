@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-Astronaut Health & Cabin Monitor — Streamlit dashboard (10 Languages + Mission Control + Built-in Report)
+Astronaut Health & Cabin Monitor — Streamlit dashboard (10 Languages + 10 Themes + Mobile UI Polish)
 """
-sys_modules_check = True
 import sys
 from datetime import date, timedelta
 from pathlib import Path
@@ -21,6 +20,50 @@ DATA_T = ROOT / "data" / "full_classified.csv"
 DATA_D = ROOT / "data" / "daily_classified.csv"
 LEVEL_COLOR = ["#10b981", "#3b82f6", "#f59e0b", "#ef4444"]
 NA_COLOR = "#64748b"
+
+# --- 10 FARKLI PROFESYONEL RENK TEMASI ---
+THEMES = {
+    "1. Uzay Karanlığı (Deep Space Dark)": {
+        "bg": "#0b0f19", "sidebar": "#0f172a", "card": "#1e293b", "card_end": "#0f172a",
+        "text": "#f8fafc", "subtext": "#94a3b8", "border": "#334155", "accent": "#38bdf8", "is_dark": True
+    },
+    "2. NASA Klasik Mavi (Mission Control Blue)": {
+        "bg": "#061224", "sidebar": "#0a1c38", "card": "#112a4f", "card_end": "#091830",
+        "text": "#f0f7ff", "subtext": "#8cb3e8", "border": "#1e4278", "accent": "#00a8ff", "is_dark": True
+    },
+    "3. Mars Kızılı (Red Planet Ops)": {
+        "bg": "#170b0b", "sidebar": "#241010", "card": "#361717", "card_end": "#1f0d0d",
+        "text": "#fff5f5", "subtext": "#d69e9e", "border": "#592525", "accent": "#ff5e5e", "is_dark": True
+    },
+    "4. Zümrüt Yörünge (Orbital Emerald)": {
+        "bg": "#071712", "sidebar": "#0b241c", "card": "#12382c", "card_end": "#091f18",
+        "text": "#f0fdf9", "subtext": "#86cbb6", "border": "#1e5947", "accent": "#10b981", "is_dark": True
+    },
+    "5. Siber Mor (Nebula Violet)": {
+        "bg": "#120b1f", "sidebar": "#1b102e", "card": "#291845", "card_end": "#170d26",
+        "text": "#faf5ff", "subtext": "#b89ee6", "border": "#442873", "accent": "#a855f7", "is_dark": True
+    },
+    "6. Altın Güneş (Solar Flare Gold)": {
+        "bg": "#171207", "sidebar": "#241c0b", "card": "#362a11", "card_end": "#1f1809",
+        "text": "#fffbeb", "subtext": "#d9c289", "border": "#5c471c", "accent": "#f59e0b", "is_dark": True
+    },
+    "7. Karbon Antrasit (Stealth Carbon)": {
+        "bg": "#121212", "sidebar": "#1a1a1a", "card": "#262626", "card_end": "#171717",
+        "text": "#f5f5f5", "subtext": "#a3a3a3", "border": "#404040", "accent": "#e5e5e5", "is_dark": True
+    },
+    "8. Ay Beyazı (Lunar Daylight)": {
+        "bg": "#f8fafc", "sidebar": "#f1f5f9", "card": "#ffffff", "card_end": "#f1f5f9",
+        "text": "#0f172a", "subtext": "#475569", "border": "#cbd5e1", "accent": "#0284c7", "is_dark": False
+    },
+    "9. Klinik Buz (Medical Ice Light)": {
+        "bg": "#f0f9ff", "sidebar": "#e0f2fe", "card": "#ffffff", "card_end": "#e0f2fe",
+        "text": "#0c4a6e", "subtext": "#0369a1", "border": "#bae6fd", "accent": "#0284c7", "is_dark": False
+    },
+    "10. Sıcak Kum (Dune Daylight)": {
+        "bg": "#faf8f5", "sidebar": "#f3efe6", "card": "#ffffff", "card_end": "#f3efe6",
+        "text": "#292524", "subtext": "#57534e", "border": "#d6d3d1", "accent": "#d97706", "is_dark": False
+    }
+}
 
 # --- 10 DİLLİ ÇOKLU DİL DESTEĞİ ---
 I18N = {
@@ -253,7 +296,7 @@ I18N = {
         "c_rad": "Скорость радиационного потока", "daily": "Суточные журналы экипажа", "d_sleep": "Сон (ч)", "d_mood": "Настроение (1-5)",
         "d_stress": "Стресс (1-5)", "d_res": "Упражнения (мин)", "d_none": "Записи отсутствуют.",
         "why": "Диагностическое обоснование", "steps": "Протокол реагирования", "flags": "Активные флаги", "trend": "Анализ тренда",
-        "ok": "Все параметры в норме. Вмешательство не требуется.", "watch": "Параметры приближаются к предепам; продолжайте наблюдение.",
+        "ok": "Все параметры в норме. Вмешательство не требуется.", "watch": "Параметры приближаются к пределам; продолжайте наблюдение.",
         "disc": "⚠️ Прототип NASA Space Apps — Симулированная телеметрия по стандартам NASA-STD-3001.",
         "tab1": "Монитор телеметрии", "tab2": "Сравнение экипажа", "tab3": "NASA Live & Новости", "tab4": "Центр миссии",
         "comp_h": "Сравнительная телеметрия экипажа", "comp_p": "Синхронизированное сравнение векторов.",
@@ -328,10 +371,16 @@ def delta(cur_v, prev_v, digits=2):
     x = cur_v - prev_v
     return None if pd.isna(x) else f"{x:+.{digits}f}"
 
-def line_chart(df, col, title, unit, rules=(), height=220, x="timestamp:T", point=False):
-    base = alt.Chart(df).mark_line(strokeWidth=2.5, color="#38bdf8", point=point).encode(
-        x=alt.X(x, title=None, axis=alt.Axis(gridColor="#1e293b", labelColor="#94a3b8")),
-        y=alt.Y(f"{col}:Q", title=unit, scale=alt.Scale(zero=False), axis=alt.Axis(gridColor="#1e293b", labelColor="#94a3b8")),
+def line_chart(df, col, title, unit, rules=(), height=220, x="timestamp:T", point=False, th=None):
+    grid_c = th["border"] if th else "#1e293b"
+    lbl_c = th["subtext"] if th else "#94a3b8"
+    title_c = th["text"] if th else "#f1f5f9"
+    bg_c = th["card"] if th else "#0f172a"
+    acc_c = th["accent"] if th else "#38bdf8"
+
+    base = alt.Chart(df).mark_line(strokeWidth=2.5, color=acc_c, point=point).encode(
+        x=alt.X(x, title=None, axis=alt.Axis(gridColor=grid_c, labelColor=lbl_c)),
+        y=alt.Y(f"{col}:Q", title=unit, scale=alt.Scale(zero=False), axis=alt.Axis(gridColor=grid_c, labelColor=lbl_c)),
         tooltip=[x, alt.Tooltip(f"{col}:Q", format=".2f")],
     )
     layers = [base]
@@ -339,20 +388,27 @@ def line_chart(df, col, title, unit, rules=(), height=220, x="timestamp:T", poin
         rdf = pd.DataFrame(list(rules), columns=["v", "color", "label"])
         layers.append(alt.Chart(rdf).mark_rule(strokeDash=[6, 4]).encode(
             y="v:Q", color=alt.Color("color:N", scale=None), tooltip=["label:N", "v:Q"]))
-    return alt.layer(*layers).properties(title=alt.TitleParams(text=title, color="#f1f5f9", fontSize=14), height=height).configure_view(stroke=None).configure(background="#0f172a")
+    return alt.layer(*layers).properties(title=alt.TitleParams(text=title, color=title_c, fontSize=14), height=height).configure_view(stroke=None).configure(background=bg_c)
 
-def multi_line_chart(df, col, title, unit, height=280):
+def multi_line_chart(df, col, title, unit, height=280, th=None):
+    grid_c = th["border"] if th else "#1e293b"
+    lbl_c = th["subtext"] if th else "#94a3b8"
+    title_c = th["text"] if th else "#f1f5f9"
+    bg_c = th["card"] if th else "#0f172a"
+
     return alt.Chart(df).mark_line(strokeWidth=2.5).encode(
-        x=alt.X("timestamp:T", title=None, axis=alt.Axis(gridColor="#1e293b", labelColor="#94a3b8")),
-        y=alt.Y(f"{col}:Q", title=unit, scale=alt.Scale(zero=False), axis=alt.Axis(gridColor="#1e293b", labelColor="#94a3b8")),
+        x=alt.X("timestamp:T", title=None, axis=alt.Axis(gridColor=grid_c, labelColor=lbl_c)),
+        y=alt.Y(f"{col}:Q", title=unit, scale=alt.Scale(zero=False), axis=alt.Axis(gridColor=grid_c, labelColor=lbl_c)),
         color=alt.Color("astronaut_id:N", title="Astronaut", scale=alt.Scale(scheme="category10")),
         tooltip=["timestamp:T", "astronaut_id:N", alt.Tooltip(f"{col}:Q", format=".2f")]
-    ).properties(title=alt.TitleParams(text=title, color="#f1f5f9", fontSize=14), height=height).interactive().configure_view(stroke=None).configure(background="#0f172a")
+    ).properties(title=alt.TitleParams(text=title, color=title_c, fontSize=14), height=height).interactive().configure_view(stroke=None).configure(background=bg_c)
 
-def tile(label, status_text, color):
-    return (f"<div style='background:linear-gradient(135deg, #1e293b 0%, #0f172a 100%);border-left:5px solid {color};padding:12px 14px;border-radius:10px;color:white;min-height:82px;box-shadow: 0 4px 6px -1px rgba(0,0,0,0.3);'>"
-            f"<div style='font-size:11px;text-transform:uppercase;letter-spacing:0.05em;opacity:0.8;color:#94a3b8;'>{label}</div>"
-            f"<div style='font-size:16px;font-weight:700;margin-top:4px;color:#f8fafc;'>{status_text}</div></div>")
+def tile(label, status_text, color, th):
+    return (f"<div class='mobile-card' style='background:linear-gradient(135deg, {th['card']} 0%, {th['card_end']} 100%);"
+            f"border-left:5px solid {color};border-top:1px solid {th['border']};border-right:1px solid {th['border']};border-bottom:1px solid {th['border']};"
+            f"padding:14px 16px;border-radius:12px;color:{th['text']};min-height:84px;margin-bottom:8px;box-shadow: 0 4px 12px rgba(0,0,0,0.18);'>"
+            f"<div style='font-size:11px;text-transform:uppercase;letter-spacing:0.06em;opacity:0.85;color:{th['subtext']};font-weight:600;'>{label}</div>"
+            f"<div style='font-size:17px;font-weight:800;margin-top:4px;color:{th['text']};'>{status_text}</div></div>")
 
 # --- Yerleşik Rapor Oluşturma Fonksiyonu ---
 def generate_report_text(astro_name, cur_data, status_text, t_label):
@@ -387,7 +443,7 @@ Note: Automated report generated by NASA Space Apps Challenge prototype.
 """
     return report
 
-# ---------------- 10 Dilli Sidebar & Dil Seçimi ----------------
+# ---------------- 10 Dilli & 10 Temalı Sidebar ----------------
 lang_map = {
     "English": "en", "Türkçe": "tr", "Deutsch": "de", "Français": "fr", "Español": "es",
     "Italiano": "it", "Português": "pt", "日本語": "ja", "Русский": "ru", "中文": "zh"
@@ -399,28 +455,96 @@ suffix = "_tr" if lang == "tr" else ""
 
 st.sidebar.markdown("### 🛰️ " + T["side"])
 
-# --- Karanlık Mod Seçici ---
-theme_mode = st.sidebar.selectbox("🎨 Arayüz Teması", ["Uzay Karanlığı (Dark Mission Control)", "Aydınlık (Light)"])
+# --- 10 Renk Teması Seçici ---
+selected_theme_name = st.sidebar.selectbox("🎨 Renk Teması (10 Tema)", list(THEMES.keys()))
+TH = THEMES[selected_theme_name]
 
-if theme_mode.startswith("Uzay Karanlığı"):
-    st.markdown("""
-        <style>
-        .stApp {
-            background-color: #0b0f19;
-            color: #f8fafc;
-        }
-        section[data-testid="stSidebar"] {
-            background-color: #0f172a;
-            border-right: 1px solid #1e293b;
-        }
-        .stMetric {
-            background-color: #1e293b;
-            padding: 14px;
-            border-radius: 10px;
-            border: 1px solid #334155;
-        }
-        </style>
-    """, unsafe_allow_html=True)
+# --- Modern & Mobil Dostu Özel CSS Enjeksiyonu ---
+st.markdown(f"""
+    <style>
+    /* Genel Arka Plan ve Yazı Rengi */
+    .stApp {{
+        background-color: {TH['bg']};
+        color: {TH['text']};
+    }}
+    section[data-testid="stSidebar"] {{
+        background-color: {TH['sidebar']};
+        border-right: 1px solid {TH['border']};
+    }}
+    /* Modern Metrik Kartları */
+    div[data-testid="stMetric"] {{
+        background: linear-gradient(145deg, {TH['card']}, {TH['card_end']});
+        padding: 16px 18px;
+        border-radius: 14px;
+        border: 1px solid {TH['border']};
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }}
+    div[data-testid="stMetric"]:hover {{
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+        border-color: {TH['accent']};
+    }}
+    div[data-testid="stMetric"] label {{
+        color: {TH['subtext']} !important;
+        font-weight: 600 !important;
+        font-size: 0.85rem !important;
+    }}
+    div[data-testid="stMetricValue"] {{
+        color: {TH['text']} !important;
+        font-weight: 800 !important;
+    }}
+    /* Sekme (Tab) Tasarımı - Mobilde Rahat Kaydırma ve Dokunma */
+    button[data-baseweb="tab"] {{
+        border-radius: 10px 10px 0 0 !important;
+        padding: 10px 16px !important;
+        font-weight: 600 !important;
+        color: {TH['subtext']} !important;
+    }}
+    button[data-baseweb="tab"][aria-selected="true"] {{
+        color: {TH['accent']} !important;
+        border-bottom-color: {TH['accent']} !important;
+        background-color: {TH['card']}55 !important;
+    }}
+    /* Butonlar - Mobilde Dokunmatik Dostu Boyut */
+    .stButton > button, .stDownloadButton > button {{
+        border-radius: 10px !important;
+        padding: 0.6rem 1rem !important;
+        font-weight: 600 !important;
+        border: 1px solid {TH['border']} !important;
+        background-color: {TH['card']} !important;
+        color: {TH['text']} !important;
+        transition: all 0.2s ease !important;
+    }}
+    .stButton > button:hover, .stDownloadButton > button:hover {{
+        border-color: {TH['accent']} !important;
+        color: {TH['accent']} !important;
+    }}
+    /* Mobil Cihazlar İçin Özel Düzenlemeler */
+    @media (max-width: 768px) {{
+        .block-container {{
+            padding-top: 2rem !important;
+            padding-left: 0.85rem !important;
+            padding-right: 0.85rem !important;
+        }}
+        h1 {{
+            font-size: 1.55rem !important;
+            line-height: 1.25 !important;
+        }}
+        .mobile-card {{
+            padding: 12px 14px !important;
+            min-height: 72px !important;
+        }}
+        div[data-testid="stMetric"] {{
+            padding: 12px 14px !important;
+            margin-bottom: 6px !important;
+        }}
+        div[data-testid="stMetricValue"] {{
+            font-size: 1.4rem !important;
+        }}
+    }}
+    </style>
+""", unsafe_allow_html=True)
 
 df = load_tele(DATA_T)
 daily = load_daily(DATA_D)
@@ -443,12 +567,13 @@ tab_mon, tab_comp, tab_live, tab_hub = st.tabs([T["tab1"], T["tab2"], T["tab3"],
 with tab_mon:
     st.title(T["title"])
     lvl = int(cur["pred_level"])
-    recov_html = f"<div style='font-size:13px;margin-top:4px;opacity:0.9;'>{T['recov']}</div>" if cur["pred_recovering"] else ""
+    recov_html = f"<div style='font-size:13px;margin-top:4px;opacity:0.95;'>{T['recov']}</div>" if cur["pred_recovering"] else ""
+    banner_text_color = "#ffffff" if TH["is_dark"] else "#0f172a"
     
     banner_html = f"""
-    <div style="background:linear-gradient(90deg, {LEVEL_COLOR[lvl]}aa 0%, {LEVEL_COLOR[lvl]}33 100%); border-left:6px solid {LEVEL_COLOR[lvl]}; padding:20px 24px; border-radius:12px; color:white; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3);">
-        <div style="font-size:12px; text-transform:uppercase; letter-spacing:0.05em; opacity:0.8;">{astro} · {cur['timestamp']:%d.%m.%Y %H:%M} UTC · {T['ctx'].get(cur['pred_context'], cur['pred_context']).upper()} · {T['live']}</div>
-        <div style="font-size:32px; font-weight:800; margin-top:2px; letter-spacing:-0.025em;">{T['lvl'][lvl]}</div>
+    <div style="background:linear-gradient(90deg, {LEVEL_COLOR[lvl]}66 0%, {TH['card']} 100%); border-left:6px solid {LEVEL_COLOR[lvl]}; border-top:1px solid {TH['border']}; border-right:1px solid {TH['border']}; border-bottom:1px solid {TH['border']}; padding:18px 22px; border-radius:14px; color:{banner_text_color}; box-shadow: 0 8px 20px rgba(0,0,0,0.18);">
+        <div style="font-size:11px; text-transform:uppercase; letter-spacing:0.06em; opacity:0.85; font-weight:600;">{astro} · {cur['timestamp']:%d.%m.%Y %H:%M} UTC · {T['ctx'].get(cur['pred_context'], cur['pred_context']).upper()} · {T['live']}</div>
+        <div style="font-size:30px; font-weight:800; margin-top:4px; letter-spacing:-0.02em;">{T['lvl'][lvl]}</div>
         {recov_html}
     </div>
     """
@@ -490,11 +615,11 @@ with tab_mon:
 
     row1_cols = st.columns(3)
     for c, (label, text, color) in zip(row1_cols, tiles[:3]):
-        c.markdown(tile(label, text, color), unsafe_allow_html=True)
+        c.markdown(tile(label, text, color, TH), unsafe_allow_html=True)
     
     row2_cols = st.columns(3)
     for c, (label, text, color) in zip(row2_cols, tiles[3:]):
-        c.markdown(tile(label, text, color), unsafe_allow_html=True)
+        c.markdown(tile(label, text, color, TH), unsafe_allow_html=True)
 
     st.caption("ⓘ " + T["dom"]["immune"] + ": " + T["immune_note"])
     quality = str(cur.get("pred_data_quality", "UNKNOWN"))
@@ -518,19 +643,19 @@ with tab_mon:
     pc, pr, po, ra = (LIMITS_REST[k] for k in ("pco2", "pressure", "po2", "radiation"))
     c1, c2 = st.columns(2)
     c1.altair_chart(line_chart(win, "cabin_pco2_mmhg", T["c_pco2"], "mmHg",
-                               [(pc.high[0], BLU, "caution"), (pc.high[1], AMB, "warning"), (pc.high[2], RED, "critical")]),
+                               [(pc.high[0], BLU, "caution"), (pc.high[1], AMB, "warning"), (pc.high[2], RED, "critical")], th=TH),
                         use_container_width=True)
     c2.altair_chart(line_chart(win, "cabin_pressure_kpa", T["c_p"], "kPa",
-                               [(pr.low[2], BLU, "caution"), (pr.low[1], AMB, "warning"), (pr.low[0], RED, "critical")]),
+                               [(pr.low[2], BLU, "caution"), (pr.low[1], AMB, "warning"), (pr.low[0], RED, "critical")], th=TH),
                         use_container_width=True)
     c3, c4, c5 = st.columns(3)
     c3.altair_chart(line_chart(win, "cabin_po2_mmhg", T["c_o2"], "mmHg",
-                               [(po.low[2], BLU, "caution"), (po.low[1], AMB, "warning"), (po.low[0], RED, "critical")]),
+                               [(po.low[2], BLU, "caution"), (po.low[1], AMB, "warning"), (po.low[0], RED, "critical")], th=TH),
                         use_container_width=True)
     c4.altair_chart(line_chart(win, "radiation_rate_usv_day", T["c_rad"], "µSv/day",
-                               [(ra.high[0], BLU, "caution"), (ra.high[1], AMB, "warning"), (ra.high[2], RED, "critical")]),
+                               [(ra.high[0], BLU, "caution"), (ra.high[1], AMB, "warning"), (ra.high[2], RED, "critical")], th=TH),
                         use_container_width=True)
-    c5.altair_chart(line_chart(win, "heart_rate_bpm", f"{astro} {T['c_hr']}", "bpm"), use_container_width=True)
+    c5.altair_chart(line_chart(win, "heart_rate_bpm", f"{astro} {T['c_hr']}", "bpm", th=TH), use_container_width=True)
 
     # ---- Günlük Check-in'ler ----
     st.markdown(f"#### {T['daily']}")
@@ -538,7 +663,7 @@ with tab_mon:
         specs = [("sleep_hours", T["d_sleep"], "h"), ("mood_1_5", T["d_mood"], ""),
                  ("stress_1_5", T["d_stress"], ""), ("resistive_exercise_min", T["d_res"], "min")]
         for col_, (c_name, title, unit) in zip(st.columns(4), specs):
-            col_.altair_chart(line_chart(dd_astro, c_name, title, unit, height=170, x="date:T", point=True),
+            col_.altair_chart(line_chart(dd_astro, c_name, title, unit, height=170, x="date:T", point=True, th=TH),
                               use_container_width=True)
     else:
         st.info(T["d_none"])
@@ -580,9 +705,9 @@ with tab_comp:
     
     col_comp1, col_comp2 = st.columns(2)
     with col_comp1:
-        st.altair_chart(multi_line_chart(df_win, "heart_rate_bpm", "Heart Rate Comparison (bpm)", "bpm"), use_container_width=True)
+        st.altair_chart(multi_line_chart(df_win, "heart_rate_bpm", "Heart Rate Comparison (bpm)", "bpm", th=TH), use_container_width=True)
     with col_comp2:
-        st.altair_chart(multi_line_chart(df_win, "cum_dose_msv", "Cumulative Radiation Dose (mSv)", "mSv"), use_container_width=True)
+        st.altair_chart(multi_line_chart(df_win, "cum_dose_msv", "Cumulative Radiation Dose (mSv)", "mSv", th=TH), use_container_width=True)
 
 with tab_live:
     st.subheader(T["live_h"])
@@ -633,18 +758,19 @@ with tab_live:
     ]
     for item in news_items:
         st.markdown(f"""
-            <div style="background:#1e293b;padding:14px 18px;border-radius:10px;margin-bottom:10px;border-left:4px solid #38bdf8;">
-                <div style="font-size:12px;color:#94a3b8;">{item['date']}</div>
-                <div style="font-size:16px;font-weight:600;color:#f8fafc;margin-top:2px;">{item['title']}</div>
-                <div style="font-size:13px;margin-top:6px;"><a href="{item['link']}" target="_blank" style="color:#38bdf8;text-decoration:none;">Read Full NASA Briefing →</a></div>
+            <div style="background:{TH['card']};padding:14px 18px;border-radius:12px;margin-bottom:10px;border-left:4px solid {TH['accent']};border-top:1px solid {TH['border']};border-right:1px solid {TH['border']};border-bottom:1px solid {TH['border']};">
+                <div style="font-size:12px;color:{TH['subtext']};">{item['date']}</div>
+                <div style="font-size:16px;font-weight:700;color:{TH['text']};margin-top:2px;">{item['title']}</div>
+                <div style="font-size:13px;margin-top:6px;"><a href="{item['link']}" target="_blank" style="color:{TH['accent']};text-decoration:none;font-weight:600;">Read Full NASA Briefing →</a></div>
             </div>
         """, unsafe_allow_html=True)
 
 with tab_hub:
     st.subheader("Mission Control Architecture & Telemetry Specs")
     st.markdown("""
-        - **Data Source:** Aligned with NASA-STD-3001 physiological limits for long-duration spaceflight[cite: 2].
-        - **Risk Matrix:** Automated multi-domain severity classification (Cabin, Radiation, Cardio, Behavioral, Bone, Immune)[cite: 1, 2].
+        - **Data Source:** Aligned with NASA-STD-3001 physiological limits for long-duration spaceflight.
+        - **Risk Matrix:** Automated multi-domain severity classification (Cabin, Radiation, Cardio, Behavioral, Bone, Immune).
         - **Internationalization:** Instant localization across 10 global languages (English, Turkish, German, French, Spanish, Italian, Portuguese, Japanese, Russian, Chinese) for multinational crew support.
+        - **Theme Engine:** 10 adaptive color palettes supporting dark operations rooms and bright daylight environments.
         - **Interplanetary Extension:** Real-time query support for deep space bodies, spacecraft missions, and ephemeris telemetry.
     """)
