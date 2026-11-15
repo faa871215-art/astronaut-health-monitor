@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Astronaut Health & Cabin Monitor — Streamlit dashboard (Mission Control + Built-in Text Report Generator)
+Astronaut Health & Cabin Monitor — Streamlit dashboard (10 Languages + Mission Control + Built-in Report)
 """
 sys_modules_check = True
 import sys
@@ -22,7 +22,7 @@ DATA_D = ROOT / "data" / "daily_classified.csv"
 LEVEL_COLOR = ["#10b981", "#3b82f6", "#f59e0b", "#ef4444"]
 NA_COLOR = "#64748b"
 
-# --- ÇOKLU DİL DESTEĞİ (5 DİL) ---
+# --- 10 DİLLİ ÇOKLU DİL DESTEĞİ ---
 I18N = {
     "en": {
         "title": "NASA Mission Control: Astronaut Health & Cabin Telemetry", "side": "Command Center", "astro": "Astronaut",
@@ -146,6 +146,156 @@ I18N = {
         "data_quality": {"GOOD": "Calidad: buena", "PARTIAL": "Calidad: parcial", "INSUFFICIENT": "Calidad: insuficiente", "UNKNOWN": "Calidad: desconocida"},
         "src": "Referencias", "src_md": "- Estándares.",
         "pdf_btn": "📄 Descargar informe oficial de salud",
+    },
+    "it": {
+        "title": "Controllo Missione NASA: Salute Astronauti e Telemetria", "side": "Centro di Comando", "astro": "Astronauta",
+        "time": "Timeline della Missione", "win": "Finestra di Analisi (ore)",
+        "replay": "Scorri la timeline per riprodurre i flussi di telemetria.",
+        "lvl": ["NOMINALE", "ATTENZIONE", "AVVISO", "ALLARME CRITICO"],
+        "ctx": {"REST": "riposo", "EXERCISE": "esercizio", "SLEEP": "sonno", "RECOVERY": "recupero"},
+        "recov": "↘ recupero stabilità", "live": "Stato Telemetria in Vivo", "domains": "Matrice Rischio Sottosistemi",
+        "dom": {"environment": "Ambiente Cabina", "radiation": "Radiazione", "cardio": "Cardiorespiratorio",
+                "behavioral": "Comportamentale", "bone": "Muscoloscheletrico", "immune": "Immunologico"},
+        "no_data": "nessuna telemetria", "immune_note": "richiede sincronizzazione lab",
+        "m_pco2": "Cabin pCO₂", "m_p": "Pressione Cabina", "m_o2": "pO₂ Cabina", "m_hr": "Frequenza Cardiaca",
+        "m_spo2": "SpO₂", "m_dose": "Rad. Dose", "m_dose_pct": "del limite di carriera",
+        "c_pco2": "Livelli pCO₂ Cabina", "c_p": "Pressione Cabina", "c_o2": "pO₂ Cabina", "c_hr": "Trend Frequenza Cardiaca",
+        "c_rad": "Tasso di Flusso Radiazioni", "daily": "Registri Giornalieri Equipaggio", "d_sleep": "Sonno (h)", "d_mood": "Umore (1-5)",
+        "d_stress": "Stress (1-5)", "d_res": "Esercizio (min)", "d_none": "Nessun registro giornaliero.",
+        "why": "Razionale Diagnostico", "steps": "Passi di Risposta del Protocollo", "flags": "Flag di Telemetria Attivi", "trend": "Analisi dei Trend",
+        "ok": "Tutti i parametri della missione sono nominali. Nessun intervento richiesto.", "watch": "Parametri vicini ai limiti di tolleranza; mantenere il monitoraggio.",
+        "disc": "⚠️ Prototipo NASA Space Apps Challenge — Telemetria simulata allineata a NASA-STD-3001.",
+        "tab1": "Monitor Telemetria", "tab2": "Confronto Equipaggio", "tab3": "NASA in Diretta & News", "tab4": "Hub di Missione",
+        "comp_h": "Telemetria Comparativa Multi-Equipaggio", "comp_p": "Confronto vettoriale sincronizzato.",
+        "live_h": "Feed NASA in Diretta e Aggiornamenti", "live_p": "Aggiornamenti in tempo reale, eventi solari (DONKI) e OSDR.",
+        "news_h": "Ultime Notizie sulle Missioni NASA", "news_p": "Feed RSS in tempo reale.",
+        "donki": "Ottieni Eventi Solari (DONKI)", "osdr": "Cerca Studi OSDR",
+        "space_query": "Cerca Corpo Celeste o Veicolo Spaziale",
+        "search_space": "Ottieni Dati Telemetria",
+        "term": "Termine di ricerca", "none_ev": "Nessun evento SEP rilevato.", "fail": "Errore di connessione API:",
+        "data_quality": {"GOOD": "Qualità dati: buona", "PARTIAL": "Qualità dati: parziale", "INSUFFICIENT": "Qualità dati: insufficiente", "UNKNOWN": "Qualità dati: sconosciuta"},
+        "src": "Standard e Riferimenti", "src_md": "- NASA-STD-3001 Standard.",
+        "pdf_btn": "📄 Scarica Rapporto Ufficiale di Salute (TXT)"
+    },
+    "pt": {
+        "title": "Controle de Missão NASA: Saúde e Telemetria", "side": "Centro de Comando", "astro": "Astronauta",
+        "time": "Linha do Tempo", "win": "Janela de Análise (horas)",
+        "replay": "Esfregue a linha do tempo para reproduzir feeds.",
+        "lvl": ["NOMINAL", "CUIDADO", "AVISO", "ALERTA CRÍTICO"],
+        "ctx": {"REST": "descanso", "EXERCISE": "exercício", "SLEEP": "sono", "RECOVERY": "recuperação"},
+        "recov": "↘ recuperando estabilidade", "live": "Status de Telemetria ao Vivo", "domains": "Matriz de Risco",
+        "dom": {"environment": "Ambiente da Cabine", "radiation": "Radiação", "cardio": "Cardiorrespiratório",
+                "behavioral": "Comportamental", "bone": "Musculoesquelético", "immune": "Immunológico"},
+        "no_data": "sem telemetria", "immune_note": "requer sincronização de laboratório",
+        "m_pco2": "Cabin pCO₂", "m_p": "Pressão da Cabine", "m_o2": "pO₂ da Cabine", "m_hr": "Frequência Cardíaca",
+        "m_spo2": "SpO₂", "m_dose": "Rad. Dose", "m_dose_pct": "do limite de carreira",
+        "c_pco2": "Níveis pCO₂ da Cabine", "c_p": "Pressão da Cabine", "c_o2": "pO₂ da Cabine", "c_hr": "Tendência de Batimentos",
+        "c_rad": "Taxa de Fluxo de Radiação", "daily": "Registros Diários da Tripulação", "d_sleep": "Sono (h)", "d_mood": "Humor (1-5)",
+        "d_stress": "Estresse (1-5)", "d_res": "Exercício (min)", "d_none": "Nenhum registro diário.",
+        "why": "Fundamentação Diagnóstica", "steps": "Passos de Resposta", "flags": "Sinalizações Ativas", "trend": "Análise de Tendência",
+        "ok": "Todos os parâmetros nominais. Nenhuma ação necessária.", "watch": "Parâmetros próximos aos limites; mantenha vigilância.",
+        "disc": "⚠️ Protótipo NASA Space Apps Challenge — Telemetria simulada alinhada ao NASA-STD-3001.",
+        "tab1": "Monitor de Telemetria", "tab2": "Comparação de Tripulação", "tab3": "NASA ao Vivo & Notícias", "tab4": "Hub de Missão",
+        "comp_h": "Telemetria Comparativa", "comp_p": "Comparação de vetores sincronizados.",
+        "live_h": "Feed NASA ao Vivo e Atualizações", "live_p": "Atualizações em tempo real, DONKI e OSDR.",
+        "news_h": "Últimas Notícias da NASA", "news_p": "Feed RSS ao vivo.",
+        "donki": "Buscar Eventos Solares (DONKI)", "osdr": "Pesquisar Estudos OSDR",
+        "space_query": "Consultar Corpo Celeste ou Nave",
+        "search_space": "Buscar Dados de Telemetria",
+        "term": "Termo de busca", "none_ev": "Nenhum evento SEP detectado.", "fail": "Falha na conexão da API:",
+        "data_quality": {"GOOD": "Qualidade dos dados: boa", "PARTIAL": "Qualidade dos dados: parcial", "INSUFFICIENT": "Qualidade dos dados: insuficiente", "UNKNOWN": "Qualidade dos dados: desconhecida"},
+        "src": "Padrões e Referências", "src_md": "- NASA-STD-3001 Padrão.",
+        "pdf_btn": "📄 Baixar Relatório Oficial de Saúde (TXT)"
+    },
+    "ja": {
+        "title": "NASAミッションコントロール: 宇宙飛行士の健康管理とキャビンテレメトリー", "side": "コマンドセンター", "astro": "宇宙飛行士",
+        "time": "ミッションタイムライン", "win": "分析ウィンドウ (時間)",
+        "replay": "タイムラインをスクラブしてテレメトリーを再生します。",
+        "lvl": ["正常", "注意", "警告", "重大アラート"],
+        "ctx": {"REST": "休息", "EXERCISE": "運動", "SLEEP": "睡眠", "RECOVERY": "回復"},
+        "recov": "↘ 安定化に向かっています", "live": "ライブテレメトリーステータス", "domains": "サブシステムリスクマトリックス",
+        "dom": {"environment": "キャビン環境", "radiation": "放射線", "cardio": "心肺機能",
+                "behavioral": "行動健康", "bone": "筋骨格系", "immune": "免疫系"},
+        "no_data": "データなし", "immune_note": "ベースライン検査の同期が必要です",
+        "m_pco2": "Cabin pCO₂", "m_p": "キャビン気圧", "m_o2": "キャビン酸素分圧", "m_hr": "心拍数",
+        "m_spo2": "SpO₂", "m_dose": "Rad. Dose", "m_dose_pct": "キャリア制限の",
+        "c_pco2": "キャビン pCO₂ レベル", "c_p": "キャビン気圧", "c_o2": "キャビン pO₂", "c_hr": "心拍数トレンド",
+        "c_rad": "放射線フラックス率", "daily": "クルー日報", "d_sleep": "睡眠 (h)", "d_mood": "気分 (1-5)",
+        "d_stress": "ストレス (1-5)", "d_res": "運動 (分)", "d_none": "この期間のログはありません。",
+        "why": "診断根拠", "steps": "対応プロトコル", "flags": "アクティブフラグ", "trend": "トレンド分析",
+        "ok": "すべてのパラメータは正常です。対応は不要です。", "watch": "許容限界に近づいています。監視を続けてください。",
+        "disc": "⚠️ NASA Space Appsチャレンジプロトタイプ — NASA-STD-3001に準拠したシミュレーション。",
+        "tab1": "テレメトリーモニター", "tab2": "クルー比較", "tab3": "ライブNASA & ニュース", "tab4": "ミッションハブ",
+        "comp_h": "マルチクルー比較テレメトリー", "comp_p": "同期された宇宙飛行士ベクトル比較。",
+        "live_h": "ライブNASAフィード & 深宇宙アップデート", "live_p": "リアルタイム更新、太陽イベント追跡（DONKI）。",
+        "news_h": "最新のNASAミッションニュース", "news_p": "NASA本部からのライブRSSフィード。",
+        "donki": "太陽イベントを取得 (DONKI)", "osdr": "OSDR研究を検索",
+        "space_query": "天体または宇宙機をクエリ",
+        "search_space": "テレメトリーデータを取得",
+        "term": "検索用語", "none_ev": "有効なSEPイベントはありません。", "fail": "API接続障害:",
+        "data_quality": {"GOOD": "データ品質: 良好", "PARTIAL": "データ品質: 部分的", "INSUFFICIENT": "データ品質: 不十分", "UNKNOWN": "データ品質: 不明"},
+        "src": "基準とリファレンス", "src_md": "- NASA-STD-3001 宇宙飛行士・システム標準。",
+        "pdf_btn": "📄 公式健康・テレメトリーレポートをダウンロード (TXT)"
+    },
+    "ru": {
+        "title": "ЦУП NASA: Здоровье космонавтов и телеметрия кабины", "side": "Командный центр", "astro": "Космонавт",
+        "time": "Хронология миссии", "win": "Окно анализа (часы)",
+        "replay": "Прокрутите шкалу времени для воспроизведения потоков.",
+        "lvl": ["НОМИНАЛ", "ВНИМАНИЕ", "ПРЕДУПРЕЖДЕНИЕ", "КРИТИЧЕСКАЯ ТРЕВОГА"],
+        "ctx": {"REST": "отдых", "EXERCISE": "упражнения", "SLEEP": "сон", "RECOVERY": "восстановление"},
+        "recov": "↘ стабилизация", "live": "Статус телеметрии в реальном времени", "domains": "Матрица рисков",
+        "dom": {"environment": "Среда кабины", "radiation": "Радиация", "cardio": "Кардиореспираторная",
+                "behavioral": "Поведенческая", "bone": "Опорно-двигательная", "immune": "Иммунная"},
+        "no_data": "нет данных", "immune_note": "требуется синхронизация лаб. данных",
+        "m_pco2": "Cabin pCO₂", "m_p": "Давление в кабине", "m_o2": "pO₂ в кабине", "m_hr": "Пульс",
+        "m_spo2": "SpO₂", "m_dose": "Rad. Dose", "m_dose_pct": "от лимита карьерной дозы",
+        "c_pco2": "Уровни pCO₂", "c_p": "Давление кабины", "c_o2": "pO₂ кабины", "c_hr": "Тренд пульса",
+        "c_rad": "Скорость радиационного потока", "daily": "Суточные журналы экипажа", "d_sleep": "Сон (ч)", "d_mood": "Настроение (1-5)",
+        "d_stress": "Стресс (1-5)", "d_res": "Упражнения (мин)", "d_none": "Записи отсутствуют.",
+        "why": "Диагностическое обоснование", "steps": "Протокол реагирования", "flags": "Активные флаги", "trend": "Анализ тренда",
+        "ok": "Все параметры в норме. Вмешательство не требуется.", "watch": "Параметры приближаются к предепам; продолжайте наблюдение.",
+        "disc": "⚠️ Прототип NASA Space Apps — Симулированная телеметрия по стандартам NASA-STD-3001.",
+        "tab1": "Монитор телеметрии", "tab2": "Сравнение экипажа", "tab3": "NASA Live & Новости", "tab4": "Центр миссии",
+        "comp_h": "Сравнительная телеметрия экипажа", "comp_p": "Синхронизированное сравнение векторов.",
+        "live_h": "Прямой эфир NASA и обновления", "live_p": "Обновления в реальном времени, события DONKI и OSDR.",
+        "news_h": "Последние новости NASA", "news_p": "RSS-трансляция из штаб-квартиры NASA.",
+        "donki": "Получить солнечные события (DONKI)", "osdr": "Поиск исследований OSDR",
+        "space_query": "Запрос небесного тела или аппарата",
+        "search_space": "Получить данные телеметрии",
+        "term": "Поисковый запрос", "none_ev": "Событий SEP не обнаружено.", "fail": "Ошибка подключения к API:",
+        "data_quality": {"GOOD": "Качество данных: хорошее", "PARTIAL": "Качество данных: частичное", "INSUFFICIENT": "Качество данных: недостаточный", "UNKNOWN": "Качество данных: неизвестно"},
+        "src": "Стандарты и ссылки", "src_md": "- NASA-STD-3001 Стандарт человека-системы.",
+        "pdf_btn": "📄 Скачать официальный отчет о здоровье (TXT)"
+    },
+    "zh": {
+        "title": "NASA 任务控制中心：宇航员健康与舱内遥测", "side": "指挥中心", "astro": "宇航员",
+        "time": "任务时间轴", "win": "分析窗口（小时）",
+        "replay": "拖动时间轴以回放遥测数据。",
+        "lvl": ["标称", "注意", "警告", "严重警报"],
+        "ctx": {"REST": "休息", "EXERCISE": "锻炼", "SLEEP": "睡眠", "RECOVERY": "恢复"},
+        "recov": "↘ 正在恢复稳定", "live": "实时遥测状态", "domains": "子系统风险矩阵",
+        "dom": {"environment": "舱内环境", "radiation": "辐射", "cardio": "心肺功能",
+                "behavioral": "行为健康", "bone": "肌肉骨骼", "immune": "免疫系统"},
+        "no_data": "无遥测数据", "immune_note": "需要基线实验室同步",
+        "m_pco2": "Cabin pCO₂", "m_p": "舱内气压", "m_o2": "舱内氧分压", "m_hr": "心率",
+        "m_spo2": "血氧饱和度", "m_dose": "Rad. Dose", "m_dose_pct": "占职业限额的百分比",
+        "c_pco2": "舱内 pCO₂ 水平", "c_p": "舱内气压", "c_o2": "舱内 pO₂", "c_hr": "心率趋势",
+        "c_rad": "辐射通量率", "daily": "机组日常状态日志", "d_sleep": "睡眠（小时）", "d_mood": "情绪（1-5）",
+        "d_stress": "压力（1-5）", "d_res": "锻炼（分钟）", "d_none": "此期间无日常日志记录。",
+        "why": "诊断基本原理", "steps": "协议响应步骤", "flags": "活动遥测标志", "trend": "趋势分析",
+        "ok": "所有任务参数标称。无需纠正措施。", "watch": "参数接近容差极限；保持监视。",
+        "disc": "⚠️ NASA Space Apps 挑战赛原型 — 符合 NASA-STD-3001 的模拟遥测。",
+        "tab1": "遥测监视器", "tab2": "机组成员对比", "tab3": "NASA 直播与新闻", "tab4": "任务中心",
+        "comp_h": "多机组成员对比遥测", "comp_p": "同步的多宇航员遥测向量对比。",
+        "live_h": "NASA 直播与深空更新", "live_p": "实时更新、太阳活动跟踪（DONKI）和研究数据库（OSDR）。",
+        "news_h": "最新 NASA 任务与航天新闻", "news_p": "来自 NASA 总部的实时 RSS 直播。",
+        "donki": "获取太阳事件 (DONKI)", "osdr": "搜索 OSDR 研究",
+        "space_query": "查询天体或航天器（例如：火星、阿尔忒密斯、旅行者号）",
+        "search_space": "获取遥测/星历数据",
+        "term": "查询词", "none_ev": "未检测到活跃的 SEP 事件。", "fail": "API 连接失败：",
+        "data_quality": {"GOOD": "数据质量：良好", "PARTIAL": "数据质量：部分", "INSUFFICIENT": "数据质量：不足", "UNKNOWN": "数据质量：未知"},
+        "src": "标准与参考", "src_md": "- NASA-STD-3001 航天飞行人机系统标准。\n- 通过生理差分模型生成的模拟遥测。",
+        "pdf_btn": "📄 下载官方健康与遥测报告 (TXT)"
     }
 }
 
@@ -237,9 +387,12 @@ Note: Automated report generated by NASA Space Apps Challenge prototype.
 """
     return report
 
-# ---------------- Sidebar & Dil Seçimi ----------------
-lang_map = {"English": "en", "Türkçe": "tr", "Deutsch": "de", "Français": "fr", "Español": "es"}
-selected_lang_name = st.sidebar.selectbox("🌐 Dil / Language / Sprache", list(lang_map.keys()))
+# ---------------- 10 Dilli Sidebar & Dil Seçimi ----------------
+lang_map = {
+    "English": "en", "Türkçe": "tr", "Deutsch": "de", "Français": "fr", "Español": "es",
+    "Italiano": "it", "Português": "pt", "日本語": "ja", "Русский": "ru", "中文": "zh"
+}
+selected_lang_name = st.sidebar.selectbox("🌐 Dil / Language / 语言", list(lang_map.keys()))
 lang = lang_map[selected_lang_name]
 T = I18N[lang]
 suffix = "_tr" if lang == "tr" else ""
@@ -490,8 +643,8 @@ with tab_live:
 with tab_hub:
     st.subheader("Mission Control Architecture & Telemetry Specs")
     st.markdown("""
-        - **Data Source:** Aligned with NASA-STD-3001 physiological limits for long-duration spaceflight.
-        - **Risk Matrix:** Automated multi-domain severity classification (Cabin, Radiation, Cardio, Behavioral, Bone, Immune).
-        - **Internationalization:** Instant localization across 5 languages (English, Turkish, German, French, Spanish) for multinational crew support.
+        - **Data Source:** Aligned with NASA-STD-3001 physiological limits for long-duration spaceflight[cite: 2].
+        - **Risk Matrix:** Automated multi-domain severity classification (Cabin, Radiation, Cardio, Behavioral, Bone, Immune)[cite: 1, 2].
+        - **Internationalization:** Instant localization across 10 global languages (English, Turkish, German, French, Spanish, Italian, Portuguese, Japanese, Russian, Chinese) for multinational crew support.
         - **Interplanetary Extension:** Real-time query support for deep space bodies, spacecraft missions, and ephemeris telemetry.
     """)
